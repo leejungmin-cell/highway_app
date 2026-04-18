@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#003898">
+<title>고속도로 할인 계산기</title>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:#F9FAFB;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;}
+#app{font-family:'Pretendard',sans-serif;width:412px;height:917px;margin:0 auto;background:#F9FAFB;overflow-y:auto;position:relative;overflow:hidden;}
+.hd{background:#003898;padding:10px 20px;text-align:center;}
+.hd p{color:#fff;font-size:14px;font-weight:400;line-height:1.5;}
+.scr{display:none;flex-direction:column;}
+.scr.on{display:flex;}
+.body{padding:20px 20px 32px;background:#fff;}
+.sg{display:flex;flex-direction:column;gap:20px;}
+.fg{display:flex;flex-direction:column;gap:11px;}
+.fl{font-size:14px;font-weight:700;color:#393C3C;}
+.ilr{display:grid;grid-template-columns:1fr 36px 1fr;gap:16px;}
+.ilr .gap{width:36px;}
+.ir{display:grid;grid-template-columns:1fr 36px 1fr;gap:16px;align-items:center;}
+.ifd{background:#F5F5F7;border:1.5px solid #D1D1D6;border-radius:12px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;min-height:56px;}
+.ifd-txt{font-size:22px;font-weight:600;color:#777;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.ifd.filled .ifd-txt{color:#393C3C;}
+.ix{font-size:18px;color:#BBB;cursor:pointer;padding:0 0 0 8px;flex-shrink:0;display:none;}
+.sww{display:flex;justify-content:center;}
+.swb{width:36px;height:36px;border:1.5px solid #003898;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;transition:background .15s,transform .2s;}
+.swb:active{background:#D6E0F5;transform:rotate(180deg);}
+.tfd{background:#F5F5F7;border:1.5px solid #D1D1D6;border-radius:12px;padding:14px 20px;display:flex;align-items:center;}
+.ti{display:flex;align-items:center;gap:12px;}
+.tap{font-size:18px;color:#777;}
+.thm{font-size:24px;font-weight:600;color:#393C3C;letter-spacing:0.5px;}
+.pr{display:flex;gap:8px;margin-top:8px;}
+.ts{flex:1;background:#F5F5F7;border:1.5px solid #D1D1D6;border-radius:10px;padding:10px 4px;font-size:15px;font-family:'Pretendard',sans-serif;color:#393C3C;cursor:pointer;appearance:none;text-align:center;}
+.nb{width:100%;background:#888787;border:none;border-radius:12px;padding:14px 10px;font-size:18px;font-weight:500;color:#fff;cursor:pointer;font-family:'Pretendard',sans-serif;}
+.cb{display:flex;height:67px;padding:24px 40px;flex-direction:column;justify-content:center;align-items:center;width:100%;border-radius:14px;border:1px solid #003898;background:#003898;cursor:pointer;font-family:'Pretendard',sans-serif;}
+.cbl{color:#fff;text-align:center;font-size:26px;font-weight:700;line-height:150%;}
+.ic-info{border:1px solid #D1D1D6;border-radius:12px;padding:14px 10px;}
+.ih{display:flex;align-items:center;gap:4px;margin-bottom:6px;}
+.il{display:flex;flex-direction:column;gap:4px;}
+.il li{font-size:14px;color:#6E6E73;list-style:none;line-height:1.6;}
+.lsc{display:flex;align-items:center;justify-content:center;min-height:500px;background:#F9FAFB;}
+.sp{width:46px;height:46px;border:3px solid #E8E8E8;border-top-color:#003898;border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.rb{padding:16px 16px 32px;display:flex;flex-direction:column;gap:16px;}
+.entry-card{background:#fff;border:1.667px solid #E5E7EB;border-radius:16px;padding:18px 24px 14px;box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.1);}
+.entry-card .ec-label{font-size:16px;font-weight:400;color:#4A5565;letter-spacing:-0.31px;line-height:24px;margin-bottom:4px;}
+.entry-card .ec-time{font-size:36px;font-weight:700;color:#101828;letter-spacing:0.37px;line-height:40px;}
+.discount-section{border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;}
+.discount-section:active{transform:scale(0.985);}
+.discount-section.selected-50{box-shadow:0 0 0 3px #155DFC;}
+.discount-section.selected-30{box-shadow:0 0 0 3px #00A63E;}
+.ds-header{padding:12px 24px;display:flex;align-items:center;justify-content:space-between;}
+.ds-header-50{background:#155DFC;}
+.ds-header-30{background:#00A63E;}
+.ds-header-title{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.45px;line-height:28px;}
+.ds-header-bell{font-size:20px;opacity:.85;}
+.notif-hint{font-size:12px;font-weight:400;color:rgba(255,255,255,.85);margin-top:2px;}
+.ds-body{background:#fff;padding:18px 24px 16px;}
+.ds-body-50{border:1.667px solid #155DFC;border-top:none;border-radius:0 0 16px 16px;box-shadow:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);}
+.ds-body-30{border:1.667px solid #00A63E;border-top:none;border-radius:0 0 16px 16px;box-shadow:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.1);}
+.time-row{padding-bottom:14px;margin-bottom:14px;border-bottom:1.667px solid #E5E7EB;}
+.time-row:last-child{padding-bottom:0;margin-bottom:0;border-bottom:none;}
+.time-row-label{font-size:16px;font-weight:400;color:#4A5565;letter-spacing:-0.31px;line-height:24px;margin-bottom:4px;}
+.time-row-value{font-size:30px;font-weight:700;letter-spacing:0.4px;line-height:36px;}
+.time-row-value.c50{color:#155DFC;}
+.time-row-value.c30{color:#00A63E;}
+.time-row-day{font-size:14px;font-weight:400;color:#6A7282;letter-spacing:-0.15px;line-height:20px;margin-top:2px;}
+.reset-btn{background:#364153;border:none;border-radius:16px;padding:10px 24px;height:48px;width:100%;font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.45px;cursor:pointer;font-family:'Pretendard',sans-serif;transition:opacity .15s;}
+.reset-btn:active{opacity:.85;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1E293B;color:#fff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none;}
+.toast.show{opacity:1;}
+.ov{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;}
+.ov.on{display:block;}
+.sh{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:412px;background:#fff;border-radius:20px 20px 0 0;max-height:75%;overflow-y:auto;padding:0 0 24px;}
+.shh{width:38px;height:4px;background:#DDD;border-radius:2px;margin:13px auto 4px;}
+.sht{font-size:15px;font-weight:700;color:#222;text-align:center;padding:6px 20px 12px;border-bottom:1px solid #F0F0F0;background:#fff;}
+.io{padding:14px 20px;font-size:16px;color:#111;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F2F2F2;}
+.io:hover{background:#F4F8FF;}
+.io.sel{font-weight:700;color:#003898;background:#F0F4FF;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="hd"><p>고속 통행료 할인받고 똑똑하게 운전하기</p></div>
+
+  <div id="si" class="scr on">
+    <div class="body">
+      <div class="sg">
+        <div class="fg">
+          <div class="ilr">
+            <span class="fl">출발 IC</span><div class="gap"></div><span class="fl">도착 IC</span>
+          </div>
+          <div class="ir">
+            <div class="ifd" id="db" onclick="openSheet('dep')">
+              <span class="ifd-txt" id="dt">출발</span>
+              <span class="ix" id="dx" onclick="clrIC(event,'dep')">×</span>
+            </div>
+            <div class="sww">
+              <div class="swb" onclick="swapIC()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003898" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/>
+                  <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ifd" id="ab" onclick="openSheet('arr')">
+              <span class="ifd-txt" id="at">도착</span>
+              <span class="ix" id="ax" onclick="clrIC(event,'arr')">×</span>
+            </div>
+          </div>
+        </div>
+        <div class="fg">
+          <span class="fl">입차 시간</span>
+          <div class="tfd"><div class="ti"><span class="tap" id="dap">오전</span><span class="thm" id="dtm">00:00</span></div></div>
+          <div class="pr" id="pr">
+            <select class="ts" id="sap" onchange="updT()"><option value="오전">오전</option><option value="오후">오후</option></select>
+            <select class="ts" id="sh" onchange="updT()"></select>
+            <select class="ts" id="sm" onchange="updT()"></select>
+          </div>
+          <button class="nb" id="nowbtn" onclick="setNow()">현재 시간으로 설정</button>
+        </div>
+        <button class="cb" onclick="doCalc()"><span class="cbl">출차 시간 계산하기</span></button>
+        <div class="ic-info">
+          <div class="ih"><span style="color:#F5A623;font-size:16px">⚠</span>&nbsp;<span style="font-size:16px;color:#777">할인 정보</span></div>
+          <ul class="il">
+            <li>• 50% 할인: 심야 비율 70% 이상 (23:00~05:00 기준)</li>
+            <li>• 30% 할인: 심야 비율 20% 이상 70% 미만</li>
+            <li>• 심야 입차 시 빨리 나올수록 유리</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sl" class="scr"><div class="lsc"><div class="sp"></div></div></div>
+
+  <div id="sr" class="scr">
+    <div class="rb">
+      <div class="entry-card">
+        <div class="ec-label">입차 시간</div>
+        <div class="ec-time" id="res-entry"></div>
+      </div>
+      <div class="discount-section" id="sec50" onclick="selectSection(50)">
+        <div class="ds-header ds-header-50">
+          <div>
+            <div class="ds-header-title">50% 할인</div>
+            <div class="notif-hint" id="hint50">탭하면 최대 출차 30분 전 알림 설정</div>
+          </div>
+          <span class="ds-header-bell" id="bell50">🔔</span>
+        </div>
+        <div class="ds-body ds-body-50" id="body50"></div>
+      </div>
+      <div class="discount-section" id="sec30" onclick="selectSection(30)">
+        <div class="ds-header ds-header-30">
+          <div>
+            <div class="ds-header-title">30% 할인</div>
+            <div class="notif-hint" id="hint30">탭하면 최대 출차 30분 전 알림 설정</div>
+          </div>
+          <span class="ds-header-bell" id="bell30">🔔</span>
+        </div>
+        <div class="ds-body ds-body-30" id="body30"></div>
+      </div>
+      <button class="reset-btn" onclick="goBack()">다시 계산하기</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="ov" id="ov" onclick="closeSheet()">
+    <div class="sh" onclick="event.stopPropagation()">
+      <div class="shh"></div>
+      <div class="sht" id="sht"></div>
+      <div id="shl"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NS=22*60,NE=30*60;
+function toSysMin(d){const h=d.getHours(),m=d.getMinutes();return h<6?(h+24)*60+m:h*60+m;}
+function sysToDate(entry,s,t){return new Date(entry.getTime()+(t-s)*60000);}
+function inverseMin(s,R){const t=(NS-R*s)/(1-R);return t<=NE?t:null;}
+function inverseMax(s,R){return(s<NS?(NE-NS):(NE-s))/R+s;}
+function calcAll(entry){
+  const s=toSysMin(entry);
+  if(s<NS){
+    const tMin50=inverseMin(s,.7),tMin30=inverseMin(s,.2);
+    return{
+      caseNum:1,
+      min50:tMin50!==null?sysToDate(entry,s,tMin50):null,
+      max50:sysToDate(entry,s,inverseMax(s,.7)),
+      min30:tMin30!==null?sysToDate(entry,s,tMin30):sysToDate(entry,s,NS+10),
+      max30:sysToDate(entry,s,inverseMax(s,.2)),
+      maxRatio:(NE-NS)/(NE-s)
+    };
+  }else{
+    const tMax50=inverseMax(s,.7),tMax30=inverseMax(s,.2);
+    return{
+      caseNum:2,
+      min50:new Date(entry.getTime()+60000),
+      max50:sysToDate(entry,s,tMax50),
+      min30:new Date(entry.getTime()+60000),
+      max30:sysToDate(entry,s,tMax30),
+      maxRatio:1.0
+    };
+  }
+}
+function dayLbl(entry,d){
+  const e=new Date(entry.getFullYear(),entry.getMonth(),entry.getDate());
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const diff=Math.round((x-e)/86400000);
+  return diff===0?'오늘':diff===1?'내일':`${diff}일 후`;
+}
+function fmtTime(d){const h=d.getHours(),m=d.getMinutes(),ap=h<12?'오전':'오후',h12=h%12||12;return`${ap} ${p2(h12)}:${p2(m)}`;}
+
+let _timers={},_selected={},_lastEntry=null,_lastResults=null;
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function scheduleAlarm(pct,maxExit){
+  if(_timers[pct])clearTimeout(_timers[pct]);
+  const delay=maxExit.getTime()-30*60000-Date.now();
+  if(delay<0){showToast('⚠️ 최대 출차 시간까지 30분 미만이에요');return false;}
+  _timers[pct]=setTimeout(()=>{
+    if(Notification.permission==='granted')new Notification(`🚗 ${pct}% 할인 마감 알림`,{body:`30분 후 ${fmtTime(maxExit)}까지 출차하세요!`});
+    showToast(`🔔 ${pct}% 할인 마감 30분 전이에요!`);
+  },delay);
+  return true;
+}
+function selectSection(pct){
+  const results=_lastResults,entry=_lastEntry;
+  if(!results)return;
+  const maxExit=pct===50?results.max50:results.max30;
+  if(!maxExit){showToast('⚠️ 이 할인은 달성이 불가능해요');return;}
+  const sec=$(`sec${pct}`),bell=$(`bell${pct}`),hint=$(`hint${pct}`);
+  if(_selected[pct]){
+    _selected[pct]=false;if(_timers[pct])clearTimeout(_timers[pct]);
+    sec.classList.remove(`selected-${pct}`);bell.textContent='🔔';
+    hint.textContent='탭하면 최대 출차 30분 전 알림 설정';
+    showToast(`${pct}% 알림을 해제했어요`);return;
+  }
+  const doSet=()=>{
+    const ok=scheduleAlarm(pct,maxExit);if(!ok)return;
+    _selected[pct]=true;sec.classList.add(`selected-${pct}`);bell.textContent='🔕';
+    hint.textContent=`✅ ${fmtTime(maxExit)} 30분 전 알림 예약됨`;
+    showToast(`🔔 ${fmtTime(maxExit)} 30분 전에 알려드릴게요!`);
+  };
+  if(!('Notification' in window)){doSet();return;}
+  if(Notification.permission==='granted'){doSet();}
+  else if(Notification.permission!=='denied'){Notification.requestPermission().then(p=>{if(p==='granted')doSet();else showToast('⚠️ 알림 권한이 거부됐어요.')});}
+  else{showToast('⚠️ 알림이 차단됐어요. 브라우저 설정을 확인해주세요.');}
+}
+function renderTimeRow(minExit,maxExit,entry,colorClass,isImpossible){
+  if(isImpossible||!minExit||!maxExit)return`<div style="padding:12px;font-size:14px;color:#B05A00;background:#FFF7F0;border-radius:8px;text-align:center">이 입차 시간으로는 달성 불가능해요</div>`;
+  return`<div class="time-row"><div class="time-row-label">시작 시간</div><div class="time-row-value ${colorClass}">${fmtTime(minExit)}</div><div class="time-row-day">${dayLbl(entry,minExit)}</div></div><div class="time-row"><div class="time-row-label">종료 시간</div><div class="time-row-value ${colorClass}">${fmtTime(maxExit)}</div><div class="time-row-day">${dayLbl(entry,maxExit)}</div></div>`;
+}
+const IC_LIST=["가산","강릉","거제","계룡","고성","공주","광명","광주","괴산","구리","구미","군산","군포","김제","김천","김포","김해","남구미","남대구","남대전","남안성","남여주","남양주","논산","담양","대전","동대구","동해","마산","목포","물금","부산","부천","북대구","북여주","사천","서대구","서대전","서광주","서인천","서청주","서평택","선산","성남","속초","송탄","수원","순천","시흥","신탄진","안산","안성","안양","양산","여수","여주","영천","오산","옥천","왜관","용인","원주","유성","이천","익산","인산","인천","인천공항","전주","진주","창원","천안","춘천","칠곡","통영","판교","평택","포항","하남","홍천","횡성"].sort((a,b)=>a.localeCompare(b,'ko'));
+let dep='',arr='',dTgt='',eH=0,eM=0;
+const $=id=>document.getElementById(id);
+const p2=n=>String(n).padStart(2,'0');
+function init(){
+  for(let i=1;i<=12;i++){const o=document.createElement('option');o.value=i;o.textContent=p2(i)+'시';$('sh').appendChild(o);}
+  for(let i=0;i<60;i++){const o=document.createElement('option');o.value=i;o.textContent=p2(i)+'분';$('sm').appendChild(o);}
+  setNow();
+}
+function setNow(){
+  const n=new Date(),h24=n.getHours(),m=n.getMinutes(),ap=h24<12?'오전':'오후',h12=h24%12||12;
+  $('sap').value=ap;$('sh').value=h12;$('sm').value=m;updT();
+  const btn=$('nowbtn');btn.textContent=`✓ ${ap} ${p2(h12)}:${p2(m)}으로 설정됨`;
+  setTimeout(()=>btn.textContent='현재 시간으로 설정',1800);
+}
+function updT(){
+  const ap=$('sap').value,h=+$('sh').value,m=+$('sm').value;
+  $('dap').textContent=ap;$('dtm').textContent=p2(h)+':'+p2(m);
+  let h24=h;if(ap==='오전'&&h===12)h24=0;else if(ap==='오후'&&h!==12)h24=h+12;
+  eH=h24;eM=m;
+}
+function openSheet(t){
+  dTgt=t;const cur=t==='dep'?dep:arr;
+  $('sht').textContent=t==='dep'?'출발 IC 선택':'도착 IC 선택';
+  const list=$('shl');list.innerHTML='';
+  IC_LIST.forEach(ic=>{
+    const d=document.createElement('div');d.className='io'+(ic===cur?' sel':'');
+    d.innerHTML=`<span>${ic}</span>`+(ic===cur?'<span style="color:#003898;font-size:14px;font-weight:700">✓</span>':'');
+    d.onclick=()=>pickIC(ic);list.appendChild(d);
+  });
+  $('ov').classList.add('on');
+}
+function closeSheet(){$('ov').classList.remove('on');}
+function pickIC(ic){
+  if(dTgt==='dep'){dep=ic;$('dt').textContent=ic;$('db').classList.add('filled');$('dx').style.display='block';}
+  else{arr=ic;$('at').textContent=ic;$('ab').classList.add('filled');$('ax').style.display='block';}
+  closeSheet();
+}
+function clrIC(e,t){
+  e.stopPropagation();
+  if(t==='dep'){dep='';$('dt').textContent='출발';$('db').classList.remove('filled');$('dx').style.display='none';}
+  else{arr='';$('at').textContent='도착';$('ab').classList.remove('filled');$('ax').style.display='none';}
+}
+function swapIC(){
+  [dep,arr]=[arr,dep];
+  $('dt').textContent=dep||'출발';$('db').classList.toggle('filled',!!dep);$('dx').style.display=dep?'block':'none';
+  $('at').textContent=arr||'도착';$('ab').classList.toggle('filled',!!arr);$('ax').style.display=arr?'block':'none';
+}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');}
+function doCalc(){
+  if(!dep||!arr){alert('출발/도착 IC를 선택해주세요.');return;}
+  showScr('sl');
+  _selected={};Object.values(_timers).forEach(clearTimeout);_timers={};
+  ['sec50','sec30'].forEach(id=>{$(`${id}`).classList.remove('selected-50','selected-30');});
+  $('bell50').textContent='🔔';$('bell30').textContent='🔔';
+  $('hint50').textContent='탭하면 최대 출차 30분 전 알림 설정';
+  $('hint30').textContent='탭하면 최대 출차 30분 전 알림 설정';
+  setTimeout(()=>{
+    const entry=new Date();entry.setHours(eH,eM,0,0);
+    const res=calcAll(entry);
+    _lastEntry=entry;_lastResults=res;
+    $('res-entry').textContent=fmtTime(entry);
+    $('body50').innerHTML=renderTimeRow(res.min50,res.max50,entry,'c50',!res.min50);
+    $('body30').innerHTML=renderTimeRow(res.min30,res.max30,entry,'c30',!res.min30);
+    showScr('sr');
+  },300);
+}
+function goBack(){showScr('si');}
+init();
+</script>
+</body>
+</html>
